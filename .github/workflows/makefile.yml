@@ -1,0 +1,39 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer install --no-interaction
+
+      - name: Run PHPUnit tests
+        run: make test
+
+      - name: Run PHPStan analysis
+        run: make phpstan
+
+      - name: Final check
+        run: |
+          if [ $? -eq 0 ]; then
+              echo "All checks passed!"
+          else
+              echo "There are errors or failures."
+              exit 1
+          fi
