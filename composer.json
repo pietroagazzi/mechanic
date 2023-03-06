@@ -1,22 +1,22 @@
 {
-    "name": "pietroagazzi/mechanic",
-    "description": "A PHP micro web framework with MVC pattern",
-    "type": "project",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Pietroagazzi\\Mechanic\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Pietro Agazzi",
-            "email": "agazzi_pietro@protonmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require-dev": {
-        "phpstan/phpstan": "1.10.x-dev",
-        "phpunit/phpunit": "^10.1@dev"
-    }
+  "name": "pietroagazzi/mechanic",
+  "description": "A PHP micro web framework with MVC pattern",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+	"psr-4": {
+	  "Pietroagazzi\\Mechanic\\": "src/"
+	}
+  },
+  "authors": [
+	{
+	  "name": "Pietro Agazzi",
+	  "email": "agazzi_pietro@protonmail.com"
+	}
+  ],
+  "minimum-stability": "dev",
+  "require-dev": {
+	"phpstan/phpstan": "1.10.x-dev",
+	"phpunit/phpunit": "^10.1@dev"
+  }
 }
