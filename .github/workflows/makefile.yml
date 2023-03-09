@@ -24,8 +24,7 @@ jobs:
         run: composer install --no-interaction
 
       - name: Install Xdebug
-        run: pecl install xdebug | 
-          echo "zend_extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        run: pecl install xdebug
 
       - name: Run PHPUnit tests
         run: make test
