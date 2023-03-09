@@ -5,6 +5,7 @@ namespace Http;
 use Pietroagazzi\Mechanic\Http\Response;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
+use function xdebug_get_headers;
 
 class ResponseTest extends TestCase
 {
