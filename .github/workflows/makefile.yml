@@ -2,9 +2,9 @@ name: Makefile CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -22,6 +22,10 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction
+
+      - name: Install Xdebug
+        run: pecl install xdebug | 
+          echo "zend_extension=xdebug.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
       - name: Run PHPUnit tests
         run: make test
