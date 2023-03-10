@@ -23,11 +23,10 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction
 
-      - name: Install Xdebug
-        run: pecl install xdebug
-
-      - name: Run PHPUnit tests
-        run: make test
+      - name: Run PHPUnit tests with Xdebug
+        env:
+          XDEBUG_MODE: "coverage,profiler,develop"
+          run: php -d zend_extension=xdebug.so ./vendor/bin/phpunit --configuration=./phpunit.xml --coverage-clover=./.phpunit.cache/clover.xml
 
       - name: Run PHPStan analysis
         run: make phpstan
