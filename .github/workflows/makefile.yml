@@ -26,7 +26,7 @@ jobs:
       - name: Run PHPUnit tests with Xdebug
         env:
           XDEBUG_MODE: "coverage,profiler,develop"
-          run: php -d zend_extension=xdebug.so ./vendor/bin/phpunit --configuration=./phpunit.xml --coverage-clover=./.phpunit.cache/clover.xml
+        run: php -d zend_extension=xdebug.so ./vendor/bin/phpunit --configuration=./phpunit.xml --coverage-clover=./.phpunit.cache/clover.xml
 
       - name: Run PHPStan analysis
         run: make phpstan
