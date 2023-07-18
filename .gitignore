@@ -97,3 +97,7 @@ fabric.properties
 phing-latest.phar
 phing.phar
 phpunit.phar
+
+### Build
+build/coverage
+build/logs

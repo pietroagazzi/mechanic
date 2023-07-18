@@ -9,7 +9,6 @@ class RequestTest extends TestCase
 {
 	/**
 	 * Mock the global variables
-	 * @return void
 	 */
 	public function setUp(): void
 	{
@@ -33,7 +32,6 @@ class RequestTest extends TestCase
 	/**
 	 * Test the creation of a Request object from the global variables
 	 * @covers \Pietroagazzi\Mechanic\Http\Request::createFromGlobals
-	 * @return void
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function testCreateFromGlobals(): void
@@ -48,7 +46,6 @@ class RequestTest extends TestCase
 
 	/**
 	 * @covers \Pietroagazzi\Mechanic\Http\Request::getMethod
-	 * @return void
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function testGetMethod(): void
@@ -59,7 +56,6 @@ class RequestTest extends TestCase
 
 	/**
 	 * @covers \Pietroagazzi\Mechanic\Http\Request::getUri
-	 * @return void
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function testGetUri(): void
@@ -70,7 +66,6 @@ class RequestTest extends TestCase
 
 	/**
 	 * @covers \Pietroagazzi\Mechanic\Http\Request::get
-	 * @return void
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function testGet(): void
@@ -83,7 +78,6 @@ class RequestTest extends TestCase
 
 	/**
 	 * @covers \Pietroagazzi\Mechanic\Http\Request
-	 * @return void
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function test__construct(): void

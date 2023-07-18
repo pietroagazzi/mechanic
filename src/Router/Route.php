@@ -2,7 +2,16 @@
 
 namespace Pietroagazzi\Mechanic\Router;
 
-class Route
+readonly class Route
 {
+	public function __construct(
+		private string $path,
+	)
+	{
+	}
 
+	public function getPath(): string
+	{
+		return $this->path;
+	}
 }
