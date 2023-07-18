@@ -4,134 +4,112 @@ namespace Pietroagazzi\Mechanic\Http;
 
 class Response
 {
-    use ResponseStatusCodeTrait {
-        ResponseStatusCodeTrait::text as public getStatusCodeText;
-    }
+	use ResponseStatusCodeTrait {
+		ResponseStatusCodeTrait::text as public getStatusCodeText;
+	}
 
-    /**
-     * @var string|null $content
-     */
-    private ?string $content;
+	private ?string $content;
 
-    /**
-     * @var int $status
-     */
-    private int $status;
+	/**
+	 * @var int $status
+	 */
+	private int $status;
 
-    /**
-     * @var array<string, string> $headers
-     */
-    private array $headers;
+	/**
+	 * @var array<string, string> $headers
+	 */
+	private array $headers;
 
-    /**
-     * Response constructor.
-     * @param string|null $content Content of the response
-     * @param int $status Status code of the response
-     * @param array<string, string> $headers Headers of the response
-     */
-    public function __construct(string $content = null, int $status = 200, array $headers = [])
-    {
-        $this->content = $content;
-        $this->status = $status;
-        $this->headers = $headers;
-    }
+	/**
+	 * Response constructor.
+	 * @param string|null $content Content of the response
+	 * @param int $status Status code of the response
+	 * @param array<string, string> $headers Headers of the response
+	 */
+	public function __construct(string $content = null, int $status = 200, array $headers = [])
+	{
+		$this->content = $content;
+		$this->status = $status;
+		$this->headers = $headers;
+	}
 
-    /**
-     * Send the response to the client
-     * @return void
-     */
-    public function send(): void
-    {
-        $this->sendHeaders();
-        $this->sendContent();
-    }
+	/**
+	 * Send the response to the client
+	 */
+	public function send(): void
+	{
+		$this->sendHeaders();
+		$this->sendContent();
+	}
 
-    /**
-     * Send the headers of the response to the client
-     * @return $this
-     */
-    public function sendHeaders(): static
-    {
-        foreach ($this->headers as $name => $value) {
-            header("$name: $value", response_code: $this->getStatus());
-        }
+	/**
+	 * Send the headers of the response to the client
+	 */
+	public function sendHeaders(): static
+	{
+		foreach ($this->headers as $name => $value) {
+			header("$name: $value", response_code: $this->getStatus());
+		}
 
-        // Set the status code
-        header("HTTP/1.1 {$this->getStatus()} {$this->getStatusCodeText($this->getStatus())}", true, $this->getStatus());
+		// Set the status code
+		header("HTTP/1.1 {$this->getStatus()} {$this->getStatusCodeText($this->getStatus())}", true, $this->getStatus());
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Send the content fo the current web response
-     * @return $this
-     */
-    public function sendContent(): static
-    {
-        ob_start();
+	public function getStatus(): int
+	{
+		return $this->status;
+	}
 
-        echo $this->getContent();
+	public function setStatus(int $status): static
+	{
+		$this->status = $status;
 
-        ob_end_flush();
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Send the content fo the current web response
+	 */
+	public function sendContent(): static
+	{
+		ob_start();
 
-    /**
-     * Get the content of the response
-     * @return int
-     */
-    public function getStatus(): int
-    {
-        return $this->status;
-    }
+		echo $this->getContent();
 
-    public function setStatus(int $status): static
-    {
-        $this->status = $status;
+		ob_end_flush();
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get the content of the response
-     * @return string|null
-     */
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
+	public function getContent(): ?string
+	{
+		return $this->content;
+	}
 
-    /**
-     * Set the content of the response
-     * @param string|null $content
-     * @return $this
-     */
-    public function setContent(?string $content): static
-    {
-        $this->content = $content;
+	public function setContent(?string $content): static
+	{
+		$this->content = $content;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get the headers of the response
-     * @return array<string, string>
-     */
-    public function getHeaders(): array
-    {
-        return $this->headers;
-    }
+	/**
+	 * @return array<string, string>
+	 */
+	public function getHeaders(): array
+	{
+		return $this->headers;
+	}
 
-    /**
-     * Set the headers of the response
-     * @param array<string, string> $headers
-     * @return $this
-     */
-    public function setHeaders(array $headers): static
-    {
-        $this->headers = $headers;
+	/**
+	 * @param array<string, string> $headers
+	 */
+	public function setHeaders(array $headers): static
+	{
+		$this->headers = $headers;
 
-        return $this;
-    }
+		return $this;
+	}
 }
