@@ -19,9 +19,10 @@ class UrlMatcherTest extends TestCase
 	 */
 	public function testMatch(): void
 	{
-		$collection = (new RouteCollection())->addRoute('test', new Route('test'));
+		$route = new Route('/path/to');
+		$collection = (new RouteCollection())->addRoute('test', $route);
 		$matcher = new UrlMatcher($collection);
-		$this->assertEquals('test', $matcher->match('test')->getPath());
+		$this->assertEquals($route, $matcher->match('/path/to'));
 	}
 
 	/**
