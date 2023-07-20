@@ -9,7 +9,38 @@
 
 ---
 
+```php
+$app = new Mechanic;
 
+$app->di(function (Container $container) {
+	$container->set('request', function () {
+		return new Request;
+	});
+	$container->set('response', function () {
+		return new Response;
+	});
+	$container->set('router', function () {
+		return new Router;
+	});
+});
+
+$app->middleware(function (Request $request, Closure $next) {
+	$response = $next($request);
+	return $response;
+});
+
+$app->group('/api', function () use ($app) {
+	$app->get('/users', function () {
+		return 'Hello World!';
+	});
+});
+
+$app->get('/', function () {
+	return 'Hello World!';
+});
+
+$app->handle();
+```
 # Stories
 
 Ho iniziato lo sviluppo di Mechanic parallelamente allo studio di Symfony, partendo dal Kernel. Di seguito riporto dettagliatamente ogni nuovo argomento che ho imparato e tutti i problemi che ho affrontato.

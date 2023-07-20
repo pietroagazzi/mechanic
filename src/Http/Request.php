@@ -50,12 +50,9 @@ class Request
 		return new Request($_POST, $_GET, $_COOKIE, $_SERVER);
 	}
 
-	/**
-	 * Get the HTTP method of the request
-	 */
-	public function getMethod(): string
+	public function getPath(): string
 	{
-		return $this->server['REQUEST_METHOD'];
+		return parse_url($this->getUri(), PHP_URL_PATH);
 	}
 
 	/**
@@ -64,6 +61,14 @@ class Request
 	public function getUri(): string
 	{
 		return $this->server['REQUEST_URI'];
+	}
+
+	/**
+	 * Get the HTTP method of the request
+	 */
+	public function getMethod(): string
+	{
+		return $this->server['REQUEST_METHOD'];
 	}
 
 	/**

@@ -94,4 +94,14 @@ class RequestTest extends TestCase
 		$this->assertEquals(['foo' => 'bar'], $request->getCookies());
 		$this->assertEquals(['foo' => 'bar'], $request->getServer());
 	}
+
+	/**
+	 * @covers \Pietroagazzi\Mechanic\Http\Request::getPath
+	 * @uses   \Pietroagazzi\Mechanic\Http\Request
+	 */
+	public function testGetPath(): void
+	{
+		$request = Request::createFromGlobals();
+		$this->assertEquals('/path/to/resource', $request->getPath());
+	}
 }

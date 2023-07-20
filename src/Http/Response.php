@@ -52,7 +52,7 @@ class Response
 		}
 
 		// Set the status code
-		header("HTTP/1.1 {$this->getStatus()} {$this->getStatusCodeText($this->getStatus())}", true, $this->getStatus());
+		header("HTTP/1.1 {$this->getStatus()} {self::getStatusCodeText($this->getStatus())}", true, $this->getStatus());
 
 		return $this;
 	}
