@@ -1,10 +1,8 @@
-
 PHPSTAN_CONFIG = ./phpstan.neon
 PHPUNIT_CONFIG = ./phpunit.xml
 PHPUNIT_COVERAGE_PATH = ./.phpunit.cache/coverage
 PHPUNIT_CLOVER_FILE = ./.phpunit.cache/clover.xml
 
-# Directory dei test
 TEST_DIR = ./tests
 
 test:
