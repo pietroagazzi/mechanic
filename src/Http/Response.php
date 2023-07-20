@@ -51,8 +51,16 @@ class Response
 			header("$name: $value", response_code: $this->getStatus());
 		}
 
-		// Set the status code
-		header("HTTP/1.1 {$this->getStatus()} {self::getStatusCodeText($this->getStatus())}", true, $this->getStatus());
+		// Send the status code
+		header(
+			sprintf(
+				'HTTP/%s %s %s',
+				'1.1',
+				$this->getStatus(),
+				self::getStatusCodeText($this->getStatus())
+			),
+			response_code: $this->getStatus()
+		);
 
 		return $this;
 	}

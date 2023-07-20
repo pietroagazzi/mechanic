@@ -12,6 +12,8 @@ class AbstractKernelTest extends TestCase
 	 */
 	public function testSendNotFound(): void
 	{
+		$this->expectOutputString('Not Found');
+
 		AbstractKernel::sendNotFound();
 
 		$this->assertEquals(404, http_response_code());
@@ -26,7 +28,8 @@ class AbstractKernelTest extends TestCase
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 		$_SERVER['REQUEST_URI'] = '/';
 
-		$request = (new class extends AbstractKernel {})->getRequest();
+		$request = (new class extends AbstractKernel {
+		})->getRequest();
 
 		$this->assertEquals('GET', $request->getMethod());
 		$this->assertEquals('/', $request->getPath());

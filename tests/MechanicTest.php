@@ -46,6 +46,8 @@ class MechanicTest extends TestCase
 	 */
 	public function testHandleNotFound(): void
 	{
+		$this->expectOutputString('Not Found');
+
 		$mechanic = new Mechanic();
 		$mechanic->get('/path/to', fn() => new Response('Hello World'));
 
