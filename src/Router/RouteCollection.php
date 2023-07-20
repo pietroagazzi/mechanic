@@ -2,29 +2,33 @@
 
 namespace Pietroagazzi\Mechanic\Router;
 
-class RouteCollection
+use ArrayObject;
+
+class RouteCollection extends ArrayObject
 {
-	/**
-	 * @var array<string, Route> $routes
-	 */
-	private array $routes = [];
-
-	public function addRoute(string $name, Route $route): static
+	public function add(Route $route): void
 	{
-		$this->routes[$name] = $route;
-		return $this;
+		$this->append($route);
 	}
 
-	public function getRoute(string $name): Route
+	public function has(string $path): bool
 	{
-		return $this->routes[$name];
+		return $this->get($path) !== false;
 	}
 
-	/**
-	 * @return Route[]
-	 */
+	public function get(string $path): Route|false
+	{
+		foreach ($this as $route) {
+			if ($route->getPath() === $path) {
+				return $route;
+			}
+		}
+
+		return false;
+	}
+
 	public function getRoutes(): array
 	{
-		return $this->routes;
+		return $this->getArrayCopy();
 	}
 }
