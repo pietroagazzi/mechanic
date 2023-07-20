@@ -2,10 +2,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Pietroagazzi\Mechanic\Http\Request;
-use Pietroagazzi\Mechanic\Kernel;
+use Pietroagazzi\Mechanic\Http\Response;
+use Pietroagazzi\Mechanic\Mechanic;
 
-$request = Request::createFromGlobals();
+$app = new Mechanic;
 
-$kernel = new Kernel();
-$kernel->handle($request);
+$app->get('/home', function () {
+	return new Response('Hello World!');
+});
+
+$app->handle();
