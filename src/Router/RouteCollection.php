@@ -4,6 +4,9 @@ namespace Pietroagazzi\Mechanic\Router;
 
 use ArrayObject;
 
+/**
+ * @extends ArrayObject<int, Route>
+ */
 class RouteCollection extends ArrayObject
 {
 	public function add(Route $route): void
@@ -27,6 +30,9 @@ class RouteCollection extends ArrayObject
 		return false;
 	}
 
+	/**
+	 * @return array<int, Route>
+	 */
 	public function getRoutes(): array
 	{
 		return $this->getArrayCopy();
