@@ -11,9 +11,19 @@ class Mechanic extends AbstractKernel
 		$this->router ??= new Router\Router;
 	}
 
-	public function get(string $path, callable $callback): void
+	public function get(string $path, callable $handler): void
 	{
-		$this->router->addRoute(new Router\Route('GET', $path, $callback));
+		$this->router->addRoute(new Router\Route('GET', $path, $handler));
+	}
+
+	public function post(string $path, callable $handler): void
+	{
+		$this->router->addRoute(new Router\Route('POST', $path, $handler));
+	}
+
+	public function put(string $path, callable $handler): void
+	{
+		$this->router->addRoute(new Router\Route('PUT', $path, $handler));
 	}
 
 	public function handle(Http\Request $request = null): void
