@@ -41,33 +41,3 @@ $app->get('/', function () {
 
 $app->handle();
 ```
-# Stories
-
-Ho iniziato lo sviluppo di Mechanic parallelamente allo studio di Symfony, partendo dal Kernel. Di seguito riporto dettagliatamente ogni nuovo argomento che ho imparato e tutti i problemi che ho affrontato.
-
-## How Symfony Works?
-
-Prima di partire, è importante comprendere il funzionamento di Symfony. Si tratta di un framework web PHP che segue il pattern di sviluppo Model-View-Controller (MVC). I suoi principali componenti sono:
-
-1. **Kernel**: rappresenta il nucleo del framework.
-2. **Routing**: gestisce le rotte.
-3. **Controller**: si occupa di gestire le richieste, i moduli e le viste.
-4. **Templating**: permette di separare la logica dell'applicazione dalla presentazione dell'interfaccia utente.
-5. **Form**: consente di creare e gestire i form HTML.
-6. **Doctrine**: Object-Relation Mapper (ORM), interfaccia per l'accesso al database e alle entità.
-7. **Security**: sistema di sicurezza e autorizzazione degli utenti.
-8. **Event Dispatcher**: creazione e gestione di eventi e ascoltatori.
-
-Questi sono solo i principali componenti di Symfony. Nel nostro progetto, ci concentreremo sulla ricreazione semplificata di ognuno di essi, mantenendone la logica di base originale.
-
-# Note
-
-Un'applicazione Symfony è costruita con componenti, mentre Mechanic integra solo i componenti fondamentali, inserendoli direttamente nell'applicazione. Questo lo rende una libreria più che un framework, ma in questo modo la lettura e la comprensione del codice e del funzionamento viene ulteriormente semplificata.
-
----
-
-# Http
-
-[The HttpFoundation Component (Symfony Docs)](https://symfony.com/doc/current/components/http_foundation.html#response)
-
-Sebbene il core di Symfony - così come per Laravel - sia il [Kernel](https://www.notion.so/Mechanic-a89e7945f6bc43d68c2aa99e0e5e799a), inizieremo a sviluppare Mechanic partendo ricostruendo il componente *[HttpFoundation](https://symfony.com/doc/current/components/http_foundation.html)* di Symfony. Http Foundation mette a disposizione tre classi principali: *Request,* *Response* e *Session.* Queste due classi non sono altro che una rappresentazione delle specifiche HTTP.
