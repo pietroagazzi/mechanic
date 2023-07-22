@@ -10,33 +10,23 @@
 ---
 
 ```php
+use Pietroagazzi\Mechanic\Http\{JsonResponse,Response};
+use Pietroagazzi\Mechanic\Mechanic;
+
 $app = new Mechanic;
 
-$app->di(function (Container $container) {
-	$container->set('request', function () {
-		return new Request;
-	});
-	$container->set('response', function () {
-		return new Response;
-	});
-	$container->set('router', function () {
-		return new Router;
-	});
-});
-
-$app->middleware(function (Request $request, Closure $next) {
-	$response = $next($request);
-	return $response;
-});
-
-$app->group('/api', function () use ($app) {
-	$app->get('/users', function () {
-		return 'Hello World!';
-	});
-});
-
 $app->get('/', function () {
-	return 'Hello World!';
+	return new Response('Hello World!');
+});
+
+$app->get('/users', function () {
+	return new JsonResponse([
+		'users' => [
+			'Pietro',
+			'Mario',
+			'Luigi'
+		]
+	]);
 });
 
 $app->handle();

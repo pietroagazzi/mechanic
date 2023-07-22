@@ -2,12 +2,16 @@
 
 namespace Pietroagazzi\Mechanic;
 
+use Pietroagazzi\Mechanic\DI\Container;
+
 class Mechanic extends AbstractKernel
 {
 	public function __construct(
-		private ?Router\Router $router = null
+		protected ?Container     $container = null,
+		protected ?Router\Router $router = null
 	)
 	{
+		$this->container ??= new Container;
 		$this->router ??= new Router\Router;
 	}
 
@@ -37,6 +41,16 @@ class Mechanic extends AbstractKernel
 			return;
 		}
 
-		$route->invoke()->send();
+		$this->container->invoke($route->getHandler())->send();
+	}
+
+	protected function getContainer(): Container
+	{
+		return $this->container;
+	}
+
+	protected function getRouter(): Router\Router
+	{
+		return $this->router;
 	}
 }
