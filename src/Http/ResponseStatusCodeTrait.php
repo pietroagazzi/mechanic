@@ -2,7 +2,8 @@
 
 namespace Pietroagazzi\Mechanic\Http;
 
-use _PHPStan_aed93193a\Symfony\Component\String\Exception\InvalidArgumentException;
+
+use InvalidArgumentException;
 
 /**
  * Trait for HTTP status codes

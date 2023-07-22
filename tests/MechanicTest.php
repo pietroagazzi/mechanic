@@ -13,16 +13,16 @@ class MechanicTest extends TestCase
 	 * @covers \Pietroagazzi\Mechanic\Mechanic::__construct
 	 * @covers \Pietroagazzi\Mechanic\Mechanic::handle
 	 * @throws \PHPUnit\Framework\MockObject\Exception
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Mechanic
+	 * @uses   \Pietroagazzi\Mechanic\DI\Container
 	 * @uses   \Pietroagazzi\Mechanic\Router\Route
+	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
 	 * @uses   \Pietroagazzi\Mechanic\Router\Router
-	 * @uses   \Pietroagazzi\Mechanic\AbstractKernel
 	 * @uses   \Pietroagazzi\Mechanic\Http\Response
+	 * @uses   \Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait
 	 */
 	public function testGet(): void
 	{
-		$mechanic = new Mechanic();
+		$mechanic = new Mechanic;
 		$mechanic->get('/path/to', fn() => new Response('Hello World'));
 
 		$request = $this->createMock(Request::class);

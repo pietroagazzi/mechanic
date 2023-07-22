@@ -22,13 +22,15 @@ class AbstractKernelTest extends TestCase
 	/**
 	 * @covers \Pietroagazzi\Mechanic\AbstractKernel::getRequest
 	 * @uses   \Pietroagazzi\Mechanic\Http\Request
+	 * @uses   \Pietroagazzi\Mechanic\Mechanic
+	 * @uses   \Pietroagazzi\Mechanic\Router\Router
 	 */
 	public function testGetRequest(): void
 	{
 		$_SERVER['REQUEST_METHOD'] = 'GET';
 		$_SERVER['REQUEST_URI'] = '/';
 
-		$request = (new class extends AbstractKernel {
+		$request = (new class extends Pietroagazzi\Mechanic\Mechanic {
 		})->getRequest();
 
 		$this->assertEquals('GET', $request->getMethod());

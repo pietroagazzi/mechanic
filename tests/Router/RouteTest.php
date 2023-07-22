@@ -28,15 +28,4 @@ class RouteTest extends TestCase
 
 		$this->assertEquals('/', $route->getPath());
 	}
-
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\Route::invoke
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
-	public function testInvoke(): void
-	{
-		$route = new Route('GET', '/', fn() => 'Hello World!');
-
-		$this->assertEquals('Hello World!', $route->invoke());
-	}
 }

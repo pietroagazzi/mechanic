@@ -2,29 +2,27 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Pietroagazzi\Mechanic\DI\Container;
 use Pietroagazzi\Mechanic\Http\JsonResponse;
+use Pietroagazzi\Mechanic\Http\Request;
 use Pietroagazzi\Mechanic\Http\Response;
 use Pietroagazzi\Mechanic\Mechanic;
 
-$app = new Mechanic;
+$container = new Container();
 
-$app->get('/home', function () {
-	return new Response('Hello World!');
+$container
+	->set(Request::class, function () {
+		return Request::createFromGlobals();
+	});
+
+$app = new Mechanic($container);
+
+$app->get('/home', function (Request $request) {
+	return new Response($request->getQuery()['name'] ?? 'Hello World');
 });
 
-$app->get('/users', function () {
-	return new JsonResponse([
-		'users' => [
-			[
-				'name' => 'Pietro',
-				'age' => 20,
-			],
-			[
-				'name' => 'John',
-				'age' => 30,
-			],
-		],
-	]);
+$app->get('/users', function (Request $request) {
+	return new JsonResponse($request->getBody());
 });
 
 $app->post('/post', function () {

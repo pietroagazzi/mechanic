@@ -14,6 +14,11 @@ readonly class Route
 	{
 	}
 
+	public function getHandler(): Closure
+	{
+		return $this->handler;
+	}
+
 	public function getMethod(): string
 	{
 		return $this->method;
@@ -22,10 +27,5 @@ readonly class Route
 	public function getPath(): string
 	{
 		return $this->path;
-	}
-
-	public function invoke(): mixed
-	{
-		return call_user_func($this->handler);
 	}
 }
