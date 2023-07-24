@@ -1,33 +1,30 @@
-PHPSTAN_CONFIG = ./phpstan.neon
+# PHPUnit
 PHPUNIT_CONFIG = ./phpunit.xml
-PHPUNIT_COVERAGE_PATH = ./.phpunit.cache/coverage
-PHPUNIT_CLOVER_FILE = ./.phpunit.cache/clover.xml
 
-TEST_DIR = ./tests
+# Phpstan
+PHPSTAN_CONFIG = ./phpstan.neon
+
+# Coverage threshold
+COVERAGE_THRESHOLD = 80
 
 GREEN=\033[0;32m
 RED=\033[0;31m
 NC=\033[0m
 
 test:
-	php ./vendor/bin/phpunit --configuration=$(PHPUNIT_CONFIG)
+	php ./vendor/bin/phpunit --configuration=$(PHPUNIT_CONFIG) --coverage-text --colors=never
 
 phpstan:
 	php ./vendor/bin/phpstan analyze --configuration=$(PHPSTAN_CONFIG) --xdebug
 
-coverage:
-	php ./vendor/bin/phpunit --configuration=$(PHPUNIT_CONFIG) --coverage-clover=$(PHPUNIT_CLOVER_FILE)
 
 pre-commit:
-	@echo "${GREEN}Running tests...${NC}"
-	@make test >/dev/null || (echo "${RED}❌ Tests failed. Aborting commit.${NC}" && exit 1)
-	@echo "${GREEN}✅ Tests passed.${NC}"
-	@echo "${GREEN}Running phpstan...${NC}"
+	@echo "${GREEN}Running pre-commit checks...${NC}"
 	@make phpstan >/dev/null 2>/dev/null || (echo "${RED}❌ Phpstan failed. Aborting commit.${NC}" && exit 1)
 	@echo "${GREEN}✅ Phpstan passed.${NC}"
-	@echo "${GREEN}Running coverage...${NC}"
-	@make coverage >/dev/null || (echo "${RED}❌ Coverage failed. Aborting commit.${NC}" && exit 1)
-	@echo "${GREEN}✅ Coverage passed.${NC}"
-	@echo "${GREEN}🚀 All checks passed. Commit away!${NC}"
+	@make test >/dev/null 2>/dev/null || (echo "${RED}❌ Tests failed. Aborting commit.${NC}" && exit 1)
+	@echo "${GREEN}✅ Tests passed.${NC}"
+	@echo "${GREEN}🚀 Pre-commit checks passed.${NC}"
+
 
 .PHONY: test coverage phpstan pre-commit
