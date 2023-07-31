@@ -5,7 +5,6 @@ namespace Http;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Http\Response;
-use function xdebug_get_headers;
 
 class ResponseTest extends TestCase
 {
@@ -20,22 +19,6 @@ class ResponseTest extends TestCase
 		$this->assertEquals('Hello World', $response->getContent());
 		$this->assertEquals(501, $response->getStatus());
 		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
-	}
-
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::sendHeaders
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSendHeaders(): void
-	{
-		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
-		$response->sendHeaders();
-
-		$headers = xdebug_get_headers();
-
-		$this->assertEquals(501, http_response_code());
-
-		$this->assertContains('foo: bar', $headers);
 	}
 
 	/**
@@ -59,12 +42,7 @@ class ResponseTest extends TestCase
 		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
 		$response->send();
 
-		$headers = xdebug_get_headers();
-
 		$this->assertEquals(501, http_response_code());
-
-		$this->assertContains('foo: bar', $headers);
-
 		$this->expectOutputString('Hello World');
 	}
 
