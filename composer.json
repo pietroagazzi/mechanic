@@ -18,8 +18,7 @@
 	"require-dev": {
 		"roave/security-advisories": "dev-latest",
 		"phpstan/phpstan": "1.10.x-dev",
-		"phpunit/phpunit": "^10.1@dev",
-		"ext-xdebug": "*"
+		"phpunit/phpunit": "^10.1@dev"
 	},
 	"require": {
 		"psr/container": "^2.0@dev"
