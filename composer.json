@@ -1,7 +1,7 @@
 {
 	"name": "pietroagazzi/mechanic",
 	"description": "A PHP micro web framework with MVC pattern",
-	"type": "project",
+	"type": "library",
 	"license": "MIT",
 	"autoload": {
 		"psr-4": {
