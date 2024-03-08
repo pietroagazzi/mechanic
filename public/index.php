@@ -17,10 +17,12 @@ $container
 $app = new Mechanic($container);
 
 $app->get('/welcome', function (Request $request) {
-	return new Response('Welcome to Mechanic!');
+	$name = $request->getQuery()['name'] ?? 'World';
+
+	return new Response("Hello, $name!");
 });
 
-$app->get('/', function (Request $request) {
+$app->get('/', function () {
 	return new Response('', 302, ['Location' => '/welcome']);
 });
 

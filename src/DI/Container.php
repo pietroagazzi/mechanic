@@ -4,23 +4,33 @@ namespace Pietroagazzi\Mechanic\DI;
 
 
 use Closure;
-use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionParameter;
 use RuntimeException;
 
+/**
+ * Dependency Injection Container (PSR-11)
+ * This class uses the Reflection API to resolve dependencies and invoke callables
+ *
+ * @see https://www.php-fig.org/psr/psr-11/
+ * @see https://www.php.net/manual/en/book.reflection.php
+ *
+ * @author Pietro Agazzi <contact@agazzipietro.it>
+ */
 class Container
 {
 	/**
+	 * The instances of the container
 	 * @var array<string, mixed> $instances
 	 */
 	protected array $instances = [];
 
 	/**
+    	 *
 	 * @param array<string, mixed> $parameters The parameters to pass to the callable
-	 * @throws ReflectionException
+	 * @throws ReflectionException if the callable does not exist or is not a callable
 	 */
 	public function invoke(Closure $callable, array $parameters = []): mixed
 	{
@@ -52,6 +62,8 @@ class Container
 	}
 
 	/**
+	 * Resolve a service from the container
+	 *
 	 * @param array<string, mixed> $parameters The parameters to pass to the constructor
 	 * @throws ReflectionException if the class does not exist
 	 */
@@ -66,6 +78,8 @@ class Container
 	}
 
 	/**
+	 * Set a service in the container
+	 *
 	 * @param string $abstract The abstract name
 	 * @param Closure|mixed|null $concrete The concrete class name or closure
 	 */
@@ -78,6 +92,8 @@ class Container
 	}
 
 	/**
+	 * Resolve a concrete class
+	 *
 	 * @param array<string, mixed> $parameters The parameters to pass to the constructor
 	 * @throws ReflectionException if the class does not exist
 	 */
@@ -111,19 +127,19 @@ class Container
 	}
 
 	/**
-	 * get all dependencies resolved
+	 * Get all dependencies resolved
 	 *
-	 * @param array<ReflectionParameter> $parameters
+	 * @param array<ReflectionParameter> $parameters The parameters to resolve
 	 *
 	 * @return ReflectionParameter[]
-	 * @throws Exception
+	 * @throws ReflectionException if the class does not exist
 	 */
 	public function getDependencies(array $parameters): array
 	{
 		$dependencies = [];
 		foreach ($parameters as $parameter) {
 			// get the type hinted class
-			$dependency = $parameter->getClass();
+			$dependency = $parameter->getType();
 			if ($dependency === NULL) {
 				// check if default value for a parameter is available
 				if ($parameter->isDefaultValueAvailable()) {
@@ -134,13 +150,16 @@ class Container
 				}
 			} else {
 				// get dependency resolved
-				$dependencies[] = $this->get($dependency->name);
+				$dependencies[] = $this->get($dependency->getName());
 			}
 		}
 
 		return $dependencies;
 	}
 
+	/**
+	 * Return true if the container has the given service
+	 */
 	public function has(string $id): bool
 	{
 		return isset($this->instances[$id]);

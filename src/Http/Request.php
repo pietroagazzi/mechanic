@@ -2,6 +2,11 @@
 
 namespace Pietroagazzi\Mechanic\Http;
 
+/**
+ * HTTP request object
+ *
+ * @author Pietro Agazzi <contact@agazzipietro.it>
+ */
 class Request
 {
 	/**
