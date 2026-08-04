@@ -1,31 +1,41 @@
 <?php
 
+namespace Pietroagazzi\Mechanic\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use PHPUnit\Framework\Attributes\UsesTrait;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
+use Pietroagazzi\Mechanic\AbstractKernel;
+use Pietroagazzi\Mechanic\DI\Container;
 use Pietroagazzi\Mechanic\Http\Request;
 use Pietroagazzi\Mechanic\Http\Response;
+use Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait;
 use Pietroagazzi\Mechanic\Mechanic;
+use Pietroagazzi\Mechanic\Router\Route;
+use Pietroagazzi\Mechanic\Router\RouteCollection;
+use Pietroagazzi\Mechanic\Router\Router;
 
+#[CoversClass(Mechanic::class)]
+#[UsesClass(AbstractKernel::class)]
+#[UsesClass(Container::class)]
+#[UsesClass(Response::class)]
+#[UsesClass(Route::class)]
+#[UsesClass(RouteCollection::class)]
+#[UsesClass(Router::class)]
+#[UsesTrait(ResponseStatusCodeTrait::class)]
 class MechanicTest extends TestCase
 {
 	/**
-	 * @covers \Pietroagazzi\Mechanic\Mechanic::get
-	 * @covers \Pietroagazzi\Mechanic\Mechanic::__construct
-	 * @covers \Pietroagazzi\Mechanic\Mechanic::handle
-	 * @throws \PHPUnit\Framework\MockObject\Exception
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Router
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 * @uses   \Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait
+	 * @throws Exception
 	 */
 	public function testGet(): void
 	{
 		$mechanic = new Mechanic;
 		$mechanic->get('/path/to', fn() => new Response('Hello World'));
 
-		$request = $this->createMock(Request::class);
+		$request = $this->createStub(Request::class);
 		$request->method('getMethod')->willReturn('GET');
 		$request->method('getPath')->willReturn('/path/to');
 
@@ -35,14 +45,7 @@ class MechanicTest extends TestCase
 	}
 
 	/**
-	 * @covers \Pietroagazzi\Mechanic\Mechanic::handle
-	 * @throws \PHPUnit\Framework\MockObject\Exception
-	 * @uses   \Pietroagazzi\Mechanic\Mechanic
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Router
-	 * @uses   \Pietroagazzi\Mechanic\AbstractKernel
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
+	 * @throws Exception
 	 */
 	public function testHandleNotFound(): void
 	{
@@ -51,7 +54,7 @@ class MechanicTest extends TestCase
 		$mechanic = new Mechanic();
 		$mechanic->get('/path/to', fn() => new Response('Hello World'));
 
-		$request = $this->createMock(Request::class);
+		$request = $this->createStub(Request::class);
 		$request->method('getMethod')->willReturn('GET');
 		$request->method('getPath')->willReturn('/path/not/found');
 

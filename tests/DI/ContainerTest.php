@@ -1,20 +1,19 @@
 <?php
 
-namespace DI;
+namespace Pietroagazzi\Mechanic\Tests\DI;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\DI\Container;
 use Pietroagazzi\Mechanic\Http\Request;
 use Pietroagazzi\Mechanic\Http\Response;
 
+#[CoversClass(Container::class)]
+#[UsesClass(Request::class)]
+#[UsesClass(Response::class)]
 class ContainerTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::set
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::get
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::resolve
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 */
 	public function testGetAndSet(): void
 	{
 		$container = new Container();
@@ -23,11 +22,6 @@ class ContainerTest extends TestCase
 		$this->assertInstanceOf(Container::class, $container->get(Container::class));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::set
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::get
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 */
 	public function testGetAndSetWithClosure(): void
 	{
 		$container = new Container();
@@ -38,12 +32,6 @@ class ContainerTest extends TestCase
 		$this->assertInstanceOf(Container::class, $container->get(Container::class));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::set
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::get
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testGetAndSetWithClosureAndParameters(): void
 	{
 		$container = new Container();
@@ -63,12 +51,6 @@ class ContainerTest extends TestCase
 		$this->assertEquals(200, $response->getStatus());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::set
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::get
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testGetAndSetWithClosureWithoutParameters(): void
 	{
 		$container = new Container();
@@ -78,11 +60,6 @@ class ContainerTest extends TestCase
 		$this->assertEquals(Request::createFromGlobals(), $container->get(Request::class));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::invoke
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testInvoke(): void
 	{
 		$container = new Container;
@@ -96,16 +73,11 @@ class ContainerTest extends TestCase
 		$this->assertEquals(Request::createFromGlobals(), $container->invoke($closure));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\DI\Container::invoke
-	 * @uses   \Pietroagazzi\Mechanic\DI\Container
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testInvokeWithParameters(): void
 	{
 		$container = new Container;
 
-		$request = $this->createMock(Request::class);
+		$request = $this->createStub(Request::class);
 		$request->method('getPath')->willReturn('Hello');
 
 		$container->set(Request::class, fn() => $request);

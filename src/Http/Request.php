@@ -5,6 +5,8 @@ namespace Pietroagazzi\Mechanic\Http;
 /**
  * HTTP request object
  *
+ * @todo: Should implement PSR-7 RequestInterface
+ *
  * @author Pietro Agazzi <contact@agazzipietro.it>
  */
 class Request
@@ -117,7 +119,7 @@ class Request
 	 * @param string $key The name of the parameter
 	 * @param string|null $default The default value if the parameter is not set
 	 */
-	public function get(string $key, string $default = null): ?string
+	public function get(string $key, ?string $default = null): ?string
 	{
 		return $this->request[$key] ?? $default;
 	}

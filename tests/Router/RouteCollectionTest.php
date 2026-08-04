@@ -1,18 +1,17 @@
 <?php
 
-namespace Router;
+namespace Pietroagazzi\Mechanic\Tests\Router;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Router\Route;
 use Pietroagazzi\Mechanic\Router\RouteCollection;
 
+#[CoversClass(RouteCollection::class)]
+#[UsesClass(Route::class)]
 class RouteCollectionTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\RouteCollection::add
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
 	public function testAdd(): void
 	{
 		$collection = new RouteCollection;
@@ -22,11 +21,6 @@ class RouteCollectionTest extends TestCase
 		$this->assertCount(1, $collection);
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\RouteCollection::has
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
 	public function testHas(): void
 	{
 		$collection = new RouteCollection;
@@ -37,11 +31,6 @@ class RouteCollectionTest extends TestCase
 		$this->assertFalse($collection->has('/path/to/another/resource'));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\RouteCollection::get
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
 	public function testGet(): void
 	{
 		$collection = new RouteCollection;
@@ -52,11 +41,6 @@ class RouteCollectionTest extends TestCase
 		$this->assertFalse($collection->get('/path/to/another/resource'));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\RouteCollection::getRoutes
-	 * @uses   \Pietroagazzi\Mechanic\Router\RouteCollection
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
 	public function testGetRoutes(): void
 	{
 		$collection = new RouteCollection;

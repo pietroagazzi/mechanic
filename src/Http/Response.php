@@ -2,6 +2,7 @@
 
 namespace Pietroagazzi\Mechanic\Http;
 
+# TODO: Implement PSR-7 ResponseInterface
 class Response
 {
 	use ResponseStatusCodeTrait {
@@ -26,7 +27,7 @@ class Response
 	 * @param int $status Status code of the response
 	 * @param array<string, string> $headers Headers of the response
 	 */
-	public function __construct(string $content = null, int $status = 200, array $headers = [])
+	public function __construct(?string $content = null, int $status = 200, array $headers = [])
 	{
 		$this->content = $content;
 		$this->status = $status;

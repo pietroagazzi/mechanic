@@ -7,12 +7,15 @@ use Closure;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionNamedType;
 use ReflectionParameter;
 use RuntimeException;
 
 /**
- * Dependency Injection Container (PSR-11)
- * This class uses the Reflection API to resolve dependencies and invoke callables
+ * Dependency Injection Container.
+ * This class uses the Reflection API to resolve dependencies and invoke callables.
+ *
+ * @todo: Should implement PSR-11 ContainerInterface
  *
  * @see https://www.php-fig.org/psr/psr-11/
  * @see https://www.php.net/manual/en/book.reflection.php
@@ -28,37 +31,14 @@ class Container
 	protected array $instances = [];
 
 	/**
-    	 *
-	 * @param array<string, mixed> $parameters The parameters to pass to the callable
+     * @param array<string, mixed> $parameters The parameters to pass to the callable
 	 * @throws ReflectionException if the callable does not exist or is not a callable
 	 */
 	public function invoke(Closure $callable, array $parameters = []): mixed
 	{
 		$reflector = new ReflectionFunction($callable);
 
-		$parameters = array_map(function (ReflectionParameter $parameter) use ($parameters) {
-			$parameterType = $parameter->getType();
-			if ($parameterType === null) {
-				throw new RuntimeException("Can not resolve parameter $parameter->name");
-			}
-
-			$parameterName = $parameter->getName();
-			if (isset($parameters[$parameterName])) {
-				// if the parameter is passed by name, use the passed value
-				return $parameters[$parameterName];
-			}
-
-			if ($parameter->isDefaultValueAvailable()) {
-				// if the parameter has a default value, use it
-				return $parameter->getDefaultValue();
-			}
-
-			// otherwise try to resolve it from the container
-			/* @phpstan-ignore-next-line */
-			return $this->get($parameterType->getName());
-		}, $reflector->getParameters());
-
-		return $reflector->invokeArgs($parameters);
+		return $reflector->invokeArgs($this->resolveParameters($reflector->getParameters(), $parameters));
 	}
 
 	/**
@@ -110,51 +90,49 @@ class Container
 			throw new RuntimeException("Class $concrete is not instantiable");
 		}
 
-		// get class constructor
 		$constructor = $reflector->getConstructor();
 
-		if (is_null($constructor)) {
-			// get new instance from class
+		if ($constructor === null) {
 			return $reflector->newInstance();
 		}
 
-		// get constructor params
-		$parameters = $constructor->getParameters();
-		$dependencies = $this->getDependencies($parameters);
-
-		// get new instance with dependencies resolved
-		return $reflector->newInstanceArgs($dependencies);
+		return $reflector->newInstanceArgs($this->resolveParameters($constructor->getParameters(), $parameters));
 	}
 
 	/**
-	 * Get all dependencies resolved
+	 * Resolve reflected parameters into concrete arguments.
 	 *
-	 * @param array<ReflectionParameter> $parameters The parameters to resolve
+	 * Each parameter is resolved, in order of precedence, from the given
+	 * parameters (matched by name), its own default value, then the container.
 	 *
-	 * @return ReflectionParameter[]
-	 * @throws ReflectionException if the class does not exist
+	 * @param ReflectionParameter[] $parameters The parameters to resolve
+	 * @param array<string, mixed> $given The parameters provided by the caller
+	 *
+	 * @return list<mixed>
+	 * @throws ReflectionException if a dependency does not exist
 	 */
-	public function getDependencies(array $parameters): array
+	private function resolveParameters(array $parameters, array $given): array
 	{
-		$dependencies = [];
-		foreach ($parameters as $parameter) {
-			// get the type hinted class
-			$dependency = $parameter->getType();
-			if ($dependency === NULL) {
-				// check if default value for a parameter is available
-				if ($parameter->isDefaultValueAvailable()) {
-					// get default value of parameter
-					$dependencies[] = $parameter->getDefaultValue();
-				} else {
-					throw new \RuntimeException("Can not resolve class dependency $parameter->name");
-				}
-			} else {
-				// get dependency resolved
-				$dependencies[] = $this->get($dependency->getName());
-			}
-		}
+		return array_map(function (ReflectionParameter $parameter) use ($given): mixed {
+			$name = $parameter->getName();
 
-		return $dependencies;
+			if (array_key_exists($name, $given)) {
+				return $given[$name];
+			}
+
+			if ($parameter->isDefaultValueAvailable()) {
+				return $parameter->getDefaultValue();
+			}
+
+			$type = $parameter->getType();
+
+			// only class types can be autowired
+			if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
+				throw new RuntimeException("Can not resolve parameter \$$name");
+			}
+
+			return $this->get($type->getName());
+		}, $parameters);
 	}
 
 	/**

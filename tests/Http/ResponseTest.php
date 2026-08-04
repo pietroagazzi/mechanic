@@ -1,17 +1,18 @@
 <?php
 
-namespace Http;
+namespace Pietroagazzi\Mechanic\Tests\Http;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesTrait;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Http\Response;
+use Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait;
 
+#[CoversClass(Response::class)]
+#[UsesTrait(ResponseStatusCodeTrait::class)]
 class ResponseTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::__construct
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function test__construct(): void
 	{
 		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
@@ -21,10 +22,6 @@ class ResponseTest extends TestCase
 		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::sendContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testSendContent(): void
 	{
 		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
@@ -33,10 +30,6 @@ class ResponseTest extends TestCase
 		$this->expectOutputString('Hello World');
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::send
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testSend(): void
 	{
 		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
@@ -46,11 +39,6 @@ class ResponseTest extends TestCase
 		$this->expectOutputString('Hello World');
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getStatusCodeText
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 * @uses   \Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait
-	 */
 	public function testGetStatusCodeText(): void
 	{
 		$this->assertEquals('OK', Response::getStatusCodeText(200));
@@ -63,40 +51,24 @@ class ResponseTest extends TestCase
 		Response::getStatusCodeText(999);
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getStatus
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testGetStatus(): void
 	{
 		$response = new Response();
 		$this->assertEquals(200, $response->getStatus());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testGetContent(): void
 	{
 		$response = new Response(content: 'Hello World');
 		$this->assertEquals('Hello World', $response->getContent());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getHeaders
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testGetHeaders(): void
 	{
 		$response = new Response(headers: ['foo' => 'bar']);
 		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setStatus
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testSetStatus(): void
 	{
 		$response = new Response();
@@ -104,10 +76,6 @@ class ResponseTest extends TestCase
 		$this->assertEquals(404, $response->getStatus());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testSetContent(): void
 	{
 		$response = new Response();
@@ -115,10 +83,6 @@ class ResponseTest extends TestCase
 		$this->assertEquals('Hello World', $response->getContent());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setHeaders
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testSetHeaders(): void
 	{
 		$response = new Response();

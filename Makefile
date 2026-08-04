@@ -4,19 +4,19 @@ PHPUNIT_CONFIG = ./phpunit.xml
 # Phpstan
 PHPSTAN_CONFIG = ./phpstan.neon
 
-# Coverage threshold
-COVERAGE_THRESHOLD = 80
-
 GREEN=\033[0;32m
 RED=\033[0;31m
 NC=\033[0m
 
 test:
+	php ./vendor/bin/phpunit --configuration=$(PHPUNIT_CONFIG) --no-coverage --colors=never
+
+# Requires a coverage driver (pcov or xdebug)
+coverage:
 	php ./vendor/bin/phpunit --configuration=$(PHPUNIT_CONFIG) --coverage-text --colors=never
 
 phpstan:
-	php ./vendor/bin/phpstan analyze --configuration=$(PHPSTAN_CONFIG) --xdebug
-
+	php ./vendor/bin/phpstan analyze --configuration=$(PHPSTAN_CONFIG) --no-progress
 
 pre-commit:
 	@echo "${GREEN}Running pre-commit checks...${NC}"

@@ -1,17 +1,17 @@
 <?php
 
-namespace Http;
+namespace Pietroagazzi\Mechanic\Tests\Http;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Http\JsonResponse;
+use Pietroagazzi\Mechanic\Http\Response;
 
+#[CoversClass(JsonResponse::class)]
+#[UsesClass(Response::class)]
 class JsonResponseTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\JsonResponse::__construct
-	 * @covers \Pietroagazzi\Mechanic\Http\JsonResponse::encode
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
 	public function testJsonResponse(): void
 	{
 		$response = new JsonResponse([

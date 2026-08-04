@@ -65,7 +65,7 @@ class Mechanic extends AbstractKernel
 	 * @param Http\Request|null $request the request object to handle
 	 * @throws ReflectionException if the handler is not callable
 	 */
-	public function handle(Http\Request $request = null): void
+	public function handle(?Http\Request $request = null): void
 	{
 		$request ??= $this->getRequest();
 

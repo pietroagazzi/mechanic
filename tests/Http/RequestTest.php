@@ -1,10 +1,12 @@
 <?php
 
-namespace Http;
+namespace Pietroagazzi\Mechanic\Tests\Http;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Http\Request;
 
+#[CoversClass(Request::class)]
 class RequestTest extends TestCase
 {
 	/**
@@ -31,8 +33,6 @@ class RequestTest extends TestCase
 
 	/**
 	 * Test the creation of a Request object from the global variables
-	 * @covers \Pietroagazzi\Mechanic\Http\Request::createFromGlobals
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
 	 */
 	public function testCreateFromGlobals(): void
 	{
@@ -44,30 +44,18 @@ class RequestTest extends TestCase
 		$this->assertEquals($_SERVER, $request->getServer());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Request::getMethod
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testGetMethod(): void
 	{
 		$request = Request::createFromGlobals();
 		$this->assertEquals('PUT', $request->getMethod());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Request::getUri
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testGetUri(): void
 	{
 		$request = Request::createFromGlobals();
 		$this->assertEquals('/path/to/resource', $request->getUri());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Request::get
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testGet(): void
 	{
 		$request = Request::createFromGlobals();
@@ -76,10 +64,6 @@ class RequestTest extends TestCase
 		$this->assertNull($request->get('not_existing'));
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Request
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function test__construct(): void
 	{
 		$request = new Request(
@@ -95,10 +79,6 @@ class RequestTest extends TestCase
 		$this->assertEquals(['foo' => 'bar'], $request->getServer());
 	}
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Request::getPath
-	 * @uses   \Pietroagazzi\Mechanic\Http\Request
-	 */
 	public function testGetPath(): void
 	{
 		$request = Request::createFromGlobals();

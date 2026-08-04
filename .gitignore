@@ -101,3 +101,4 @@ phpunit.phar
 ### Build
 build/coverage
 build/logs
+coverage.xml
