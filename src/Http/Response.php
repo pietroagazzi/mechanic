@@ -1,123 +1,112 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Http;
 
+# TODO: Implement PSR-7 ResponseInterface
 class Response
 {
-	use ResponseStatusCodeTrait {
-		ResponseStatusCodeTrait::text as public getStatusCodeText;
-	}
+    use ResponseStatusCodeTrait {
+        ResponseStatusCodeTrait::text as public getStatusCodeText;
+    }
 
-	private ?string $content;
+    /**
+     * Response constructor.
+     *
+     * @param string|null $content Content of the response
+     * @param int $status Status code of the response
+     * @param array<string, string> $headers Headers of the response
+     */
+    public function __construct(private ?string $content = null, private int $status = 200, private array $headers = [])
+    {
+    }
 
-	/**
-	 * @var int $status
-	 */
-	private int $status;
+    /**
+     * Send the response to the client
+     */
+    public function send(): void
+    {
+        $this->sendHeaders();
+        $this->sendContent();
+    }
 
-	/**
-	 * @var array<string, string> $headers
-	 */
-	private array $headers;
+    /**
+     * Send the headers of the response to the client
+     */
+    public function sendHeaders(): static
+    {
+        foreach ($this->headers as $name => $value) {
+            header("$name: $value", response_code: $this->getStatus());
+        }
 
-	/**
-	 * Response constructor.
-	 * @param string|null $content Content of the response
-	 * @param int $status Status code of the response
-	 * @param array<string, string> $headers Headers of the response
-	 */
-	public function __construct(string $content = null, int $status = 200, array $headers = [])
-	{
-		$this->content = $content;
-		$this->status = $status;
-		$this->headers = $headers;
-	}
+        // Send the status code
+        header(
+            sprintf(
+                'HTTP/%s %s %s',
+                '1.1',
+                $this->getStatus(),
+                self::getStatusCodeText($this->getStatus()),
+            ),
+            response_code: $this->getStatus(),
+        );
 
-	/**
-	 * Send the response to the client
-	 */
-	public function send(): void
-	{
-		$this->sendHeaders();
-		$this->sendContent();
-	}
+        return $this;
+    }
 
-	/**
-	 * Send the headers of the response to the client
-	 */
-	public function sendHeaders(): static
-	{
-		foreach ($this->headers as $name => $value) {
-			header("$name: $value", response_code: $this->getStatus());
-		}
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
 
-		// Send the status code
-		header(
-			sprintf(
-				'HTTP/%s %s %s',
-				'1.1',
-				$this->getStatus(),
-				self::getStatusCodeText($this->getStatus())
-			),
-			response_code: $this->getStatus()
-		);
+    public function setStatus(int $status): static
+    {
+        $this->status = $status;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function getStatus(): int
-	{
-		return $this->status;
-	}
+    /**
+     * Send the content fo the current web response
+     */
+    public function sendContent(): static
+    {
+        ob_start();
 
-	public function setStatus(int $status): static
-	{
-		$this->status = $status;
+        echo $this->getContent();
 
-		return $this;
-	}
+        ob_end_flush();
 
-	/**
-	 * Send the content fo the current web response
-	 */
-	public function sendContent(): static
-	{
-		ob_start();
+        return $this;
+    }
 
-		echo $this->getContent();
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
 
-		ob_end_flush();
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function getContent(): ?string
-	{
-		return $this->content;
-	}
+    /**
+     * @return array<string, string>
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
 
-	public function setContent(?string $content): static
-	{
-		$this->content = $content;
+    /**
+     * @param array<string, string> $headers
+     */
+    public function setHeaders(array $headers): static
+    {
+        $this->headers = $headers;
 
-		return $this;
-	}
-
-	/**
-	 * @return array<string, string>
-	 */
-	public function getHeaders(): array
-	{
-		return $this->headers;
-	}
-
-	/**
-	 * @param array<string, string> $headers
-	 */
-	public function setHeaders(array $headers): static
-	{
-		$this->headers = $headers;
-
-		return $this;
-	}
+        return $this;
+    }
 }

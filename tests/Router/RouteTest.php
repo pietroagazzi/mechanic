@@ -1,31 +1,27 @@
 <?php
 
-namespace Router;
+declare(strict_types=1);
 
+namespace Pietroagazzi\Mechanic\Tests\Router;
+
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Router\Route;
 
-class RouteTest extends TestCase
+#[CoversClass(Route::class)]
+final class RouteTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\Route::__construct
-	 * @covers \Pietroagazzi\Mechanic\Router\Route::getMethod
-	 */
-	public function testGetMethod(): void
-	{
-		$route = new Route('GET', '/', fn() => null);
+    public function testGetMethod(): void
+    {
+        $route = new Route('GET', '/', fn (): null => null);
 
-		$this->assertEquals('GET', $route->getMethod());
-	}
+        $this->assertSame('GET', $route->getMethod());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Router\Route::getPath
-	 * @uses   \Pietroagazzi\Mechanic\Router\Route
-	 */
-	public function testGetPath(): void
-	{
-		$route = new Route('GET', '/', fn() => null);
+    public function testGetPath(): void
+    {
+        $route = new Route('GET', '/', fn (): null => null);
 
-		$this->assertEquals('/', $route->getPath());
-	}
+        $this->assertSame('/', $route->getPath());
+    }
 }

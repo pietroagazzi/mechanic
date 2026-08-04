@@ -1,128 +1,94 @@
 <?php
 
-namespace Http;
+declare(strict_types=1);
+
+namespace Pietroagazzi\Mechanic\Tests\Http;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesTrait;
 use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Http\Response;
+use Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait;
 
-class ResponseTest extends TestCase
+#[CoversClass(Response::class)]
+#[UsesTrait(ResponseStatusCodeTrait::class)]
+final class ResponseTest extends TestCase
 {
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::__construct
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function test__construct(): void
-	{
-		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
+    public function test__construct(): void
+    {
+        $response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
 
-		$this->assertEquals('Hello World', $response->getContent());
-		$this->assertEquals(501, $response->getStatus());
-		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
-	}
+        $this->assertSame('Hello World', $response->getContent());
+        $this->assertSame(501, $response->getStatus());
+        $this->assertEquals(['foo' => 'bar'], $response->getHeaders());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::sendContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSendContent(): void
-	{
-		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
-		$response->sendContent();
+    public function testSendContent(): void
+    {
+        $response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
+        $response->sendContent();
 
-		$this->expectOutputString('Hello World');
-	}
+        $this->expectOutputString('Hello World');
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::send
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSend(): void
-	{
-		$response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
-		$response->send();
+    public function testSend(): void
+    {
+        $response = new Response(content: 'Hello World', status: 501, headers: ['foo' => 'bar']);
+        $response->send();
 
-		$this->assertEquals(501, http_response_code());
-		$this->expectOutputString('Hello World');
-	}
+        $this->assertEquals(501, http_response_code());
+        $this->expectOutputString('Hello World');
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getStatusCodeText
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 * @uses   \Pietroagazzi\Mechanic\Http\ResponseStatusCodeTrait
-	 */
-	public function testGetStatusCodeText(): void
-	{
-		$this->assertEquals('OK', Response::getStatusCodeText(200));
-		$this->assertEquals('Not Found', Response::getStatusCodeText(404));
-		$this->assertEquals('Internal Server Error', Response::getStatusCodeText(500));
+    public function testGetStatusCodeText(): void
+    {
+        $this->assertSame('OK', Response::getStatusCodeText(200));
+        $this->assertSame('Not Found', Response::getStatusCodeText(404));
+        $this->assertSame('Internal Server Error', Response::getStatusCodeText(500));
 
-		// Test with an invalid status code
-		$this->expectException(InvalidArgumentException::class);
+        // Test with an invalid status code
+        $this->expectException(InvalidArgumentException::class);
 
-		Response::getStatusCodeText(999);
-	}
+        Response::getStatusCodeText(999);
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getStatus
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testGetStatus(): void
-	{
-		$response = new Response();
-		$this->assertEquals(200, $response->getStatus());
-	}
+    public function testGetStatus(): void
+    {
+        $response = new Response();
+        $this->assertSame(200, $response->getStatus());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testGetContent(): void
-	{
-		$response = new Response(content: 'Hello World');
-		$this->assertEquals('Hello World', $response->getContent());
-	}
+    public function testGetContent(): void
+    {
+        $response = new Response(content: 'Hello World');
+        $this->assertSame('Hello World', $response->getContent());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::getHeaders
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testGetHeaders(): void
-	{
-		$response = new Response(headers: ['foo' => 'bar']);
-		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
-	}
+    public function testGetHeaders(): void
+    {
+        $response = new Response(headers: ['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $response->getHeaders());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setStatus
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSetStatus(): void
-	{
-		$response = new Response();
-		$response->setStatus(404);
-		$this->assertEquals(404, $response->getStatus());
-	}
+    public function testSetStatus(): void
+    {
+        $response = new Response();
+        $response->setStatus(404);
+        $this->assertSame(404, $response->getStatus());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setContent
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSetContent(): void
-	{
-		$response = new Response();
-		$response->setContent('Hello World');
-		$this->assertEquals('Hello World', $response->getContent());
-	}
+    public function testSetContent(): void
+    {
+        $response = new Response();
+        $response->setContent('Hello World');
+        $this->assertSame('Hello World', $response->getContent());
+    }
 
-	/**
-	 * @covers \Pietroagazzi\Mechanic\Http\Response::setHeaders
-	 * @uses   \Pietroagazzi\Mechanic\Http\Response
-	 */
-	public function testSetHeaders(): void
-	{
-		$response = new Response();
-		$response->setHeaders(['foo' => 'bar']);
-		$this->assertEquals(['foo' => 'bar'], $response->getHeaders());
-	}
+    public function testSetHeaders(): void
+    {
+        $response = new Response();
+        $response->setHeaders(['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $response->getHeaders());
+    }
 }

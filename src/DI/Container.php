@@ -1,148 +1,154 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\DI;
 
-
 use Closure;
-use Exception;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionNamedType;
 use ReflectionParameter;
 use RuntimeException;
 
+/**
+ * Dependency Injection Container.
+ * This class uses the Reflection API to resolve dependencies and invoke callables.
+ *
+ * @todo: Should implement PSR-11 ContainerInterface
+ *
+ * @see https://www.php-fig.org/psr/psr-11/
+ * @see https://www.php.net/manual/en/book.reflection.php
+ *
+ * @author Pietro Agazzi <contact@agazzipietro.it>
+ */
 class Container
 {
-	/**
-	 * @var array<string, mixed> $instances
-	 */
-	protected array $instances = [];
+    /**
+     * The instances of the container
+     *
+     * @var array<string, mixed>
+     */
+    protected array $instances = [];
 
-	/**
-	 * @param array<string, mixed> $parameters The parameters to pass to the callable
-	 * @throws ReflectionException
-	 */
-	public function invoke(Closure $callable, array $parameters = []): mixed
-	{
-		$reflector = new ReflectionFunction($callable);
+    /**
+     * @param array<string, mixed> $parameters The parameters to pass to the callable
+     *
+     * @throws ReflectionException if the callable does not exist or is not a callable
+     */
+    public function invoke(Closure $callable, array $parameters = []): mixed
+    {
+        $reflector = new ReflectionFunction($callable);
 
-		$parameters = array_map(function (ReflectionParameter $parameter) use ($parameters) {
-			$parameterType = $parameter->getType();
-			if ($parameterType === null) {
-				throw new RuntimeException("Can not resolve parameter $parameter->name");
-			}
+        return $reflector->invokeArgs($this->resolveParameters($reflector->getParameters(), $parameters));
+    }
 
-			$parameterName = $parameter->getName();
-			if (isset($parameters[$parameterName])) {
-				// if the parameter is passed by name, use the passed value
-				return $parameters[$parameterName];
-			}
+    /**
+     * Resolve a service from the container
+     *
+     * @param array<string, mixed> $parameters The parameters to pass to the constructor
+     *
+     * @throws ReflectionException if the class does not exist
+     */
+    public function get(string $concrete, array $parameters = []): mixed
+    {
+        // if we don't have it, just register it
+        $this->instances[$concrete] ??= $concrete;
 
-			if ($parameter->isDefaultValueAvailable()) {
-				// if the parameter has a default value, use it
-				return $parameter->getDefaultValue();
-			}
+        return $this->resolve($this->instances[$concrete], $parameters);
+    }
 
-			// otherwise try to resolve it from the container
-			/* @phpstan-ignore-next-line */
-			return $this->get($parameterType->getName());
-		}, $reflector->getParameters());
+    /**
+     * Set a service in the container
+     *
+     * @param string $abstract The abstract name
+     * @param Closure|mixed|null $concrete The concrete class name or closure
+     */
+    public function set(string $abstract, mixed $concrete = null): void
+    {
+        if ($concrete === null) {
+            $concrete = $abstract;
+        }
 
-		return $reflector->invokeArgs($parameters);
-	}
+        $this->instances[$abstract] = $concrete;
+    }
 
-	/**
-	 * @param array<string, mixed> $parameters The parameters to pass to the constructor
-	 * @throws ReflectionException if the class does not exist
-	 */
-	public function get(string $concrete, array $parameters = []): mixed
-	{
-		// if we don't have it, just register it
-		if (!isset($this->instances[$concrete])) {
-			$this->set($concrete);
-		}
+    /**
+     * Resolve a concrete class
+     *
+     * @param array<string, mixed> $parameters The parameters to pass to the constructor
+     *
+     * @throws ReflectionException if the class does not exist
+     */
+    public function resolve(mixed $concrete, array $parameters = []): mixed
+    {
+        if ($concrete instanceof Closure) {
+            return $concrete($this, $parameters);
+        }
 
-		return $this->resolve($this->instances[$concrete], $parameters);
-	}
+        if (!is_object($concrete) && (!is_string($concrete) || !class_exists($concrete))) {
+            throw new RuntimeException(sprintf('Can not resolve "%s" to a class', get_debug_type($concrete)));
+        }
 
-	/**
-	 * @param string $abstract The abstract name
-	 * @param Closure|mixed|null $concrete The concrete class name or closure
-	 */
-	public function set(string $abstract, mixed $concrete = null): void
-	{
-		if ($concrete === null) {
-			$concrete = $abstract;
-		}
-		$this->instances[$abstract] = $concrete;
-	}
+        $reflector = new ReflectionClass($concrete);
 
-	/**
-	 * @param array<string, mixed> $parameters The parameters to pass to the constructor
-	 * @throws ReflectionException if the class does not exist
-	 */
-	public function resolve(mixed $concrete, array $parameters = []): mixed
-	{
-		if ($concrete instanceof Closure) {
-			return $concrete($this, $parameters);
-		}
+        // check if class is instantiable
+        if (!$reflector->isInstantiable()) {
+            throw new RuntimeException(sprintf('Class %s is not instantiable', $reflector->getName()));
+        }
 
-		$reflector = new ReflectionClass($concrete);
+        $constructor = $reflector->getConstructor();
 
-		// check if class is instantiable
-		if (!$reflector->isInstantiable()) {
-			throw new RuntimeException("Class $concrete is not instantiable");
-		}
+        if ($constructor === null) {
+            return $reflector->newInstance();
+        }
 
-		// get class constructor
-		$constructor = $reflector->getConstructor();
+        return $reflector->newInstanceArgs($this->resolveParameters($constructor->getParameters(), $parameters));
+    }
 
-		if (is_null($constructor)) {
-			// get new instance from class
-			return $reflector->newInstance();
-		}
+    /**
+     * Resolve reflected parameters into concrete arguments.
+     *
+     * Each parameter is resolved, in order of precedence, from the given
+     * parameters (matched by name), its own default value, then the container.
+     *
+     * @param list<ReflectionParameter> $parameters The parameters to resolve
+     * @param array<string, mixed> $given The parameters provided by the caller
+     *
+     * @return list<mixed>
+     *
+     * @throws ReflectionException if a dependency does not exist
+     */
+    private function resolveParameters(array $parameters, array $given): array
+    {
+        return array_map(function (ReflectionParameter $parameter) use ($given): mixed {
+            $name = $parameter->getName();
 
-		// get constructor params
-		$parameters = $constructor->getParameters();
-		$dependencies = $this->getDependencies($parameters);
+            if (array_key_exists($name, $given)) {
+                return $given[$name];
+            }
 
-		// get new instance with dependencies resolved
-		return $reflector->newInstanceArgs($dependencies);
-	}
+            if ($parameter->isDefaultValueAvailable()) {
+                return $parameter->getDefaultValue();
+            }
 
-	/**
-	 * get all dependencies resolved
-	 *
-	 * @param array<ReflectionParameter> $parameters
-	 *
-	 * @return ReflectionParameter[]
-	 * @throws Exception
-	 */
-	public function getDependencies(array $parameters): array
-	{
-		$dependencies = [];
-		foreach ($parameters as $parameter) {
-			// get the type hinted class
-			$dependency = $parameter->getClass();
-			if ($dependency === NULL) {
-				// check if default value for a parameter is available
-				if ($parameter->isDefaultValueAvailable()) {
-					// get default value of parameter
-					$dependencies[] = $parameter->getDefaultValue();
-				} else {
-					throw new \RuntimeException("Can not resolve class dependency $parameter->name");
-				}
-			} else {
-				// get dependency resolved
-				$dependencies[] = $this->get($dependency->name);
-			}
-		}
+            $type = $parameter->getType();
 
-		return $dependencies;
-	}
+            // only class types can be autowired
+            if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
+                throw new RuntimeException("Can not resolve parameter \$$name");
+            }
 
-	public function has(string $id): bool
-	{
-		return isset($this->instances[$id]);
-	}
+            return $this->get($type->getName());
+        }, $parameters);
+    }
+
+    /**
+     * Return true if the container has the given service
+     */
+    public function has(string $id): bool
+    {
+        return isset($this->instances[$id]);
+    }
 }
