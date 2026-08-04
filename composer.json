@@ -1,33 +1,73 @@
 {
-	"name": "pietroagazzi/mechanic",
-	"description": "A PHP micro web framework with MVC pattern",
-	"type": "library",
-	"license": "MIT",
-	"autoload": {
-		"psr-4": {
-			"Pietroagazzi\\Mechanic\\": "src/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Pietroagazzi\\Mechanic\\Tests\\": "tests/"
-		}
-	},
-	"authors": [
-		{
-			"name": "Pietro Agazzi",
-			"email": "agazzi_pietro@protonmail.com"
-		}
-	],
-	"require": {
-		"php": ">=8.5"
-	},
-	"require-dev": {
-		"phpstan/phpstan": "^2.1",
-		"phpunit/phpunit": "^12.0",
-		"roave/security-advisories": "dev-latest"
-	},
-	"config": {
-		"sort-packages": true
-	}
+    "name": "pietroagazzi/mechanic",
+    "description": "A PHP micro web framework with MVC pattern",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Pietro Agazzi",
+            "email": "agazzi_pietro@protonmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.5"
+    },
+    "require-dev": {
+        "captainhook/captainhook": "^5.29",
+        "ergebnis/composer-normalize": "^2.52",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^13.2",
+        "rector/rector": "^2.6",
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pietroagazzi\\Mechanic\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pietroagazzi\\Mechanic\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "post-install-cmd": "captainhook install --only-enabled --force --skip-existing --no-interaction",
+        "cs": "php-cs-fixer fix",
+        "cs:check": "php-cs-fixer check --diff",
+        "qa": [
+            "@composer validate --strict",
+            "@composer normalize --dry-run",
+            "@composer audit",
+            "@cs:check",
+            "@rector:check",
+            "@stan",
+            "@test"
+        ],
+        "rector": "rector process",
+        "rector:check": "rector process --dry-run",
+        "stan": "phpstan analyse --no-progress",
+        "test": "phpunit --no-coverage",
+        "test:coverage": "phpunit"
+    },
+    "scripts-descriptions": {
+        "cs": "Fix code style with PHP-CS-Fixer",
+        "cs:check": "Check code style without modifying files",
+        "qa": "Run the full quality gate (the same checks as CI)",
+        "rector": "Apply Rector refactorings",
+        "rector:check": "Report Rector refactorings without applying them",
+        "stan": "Run PHPStan static analysis",
+        "test": "Run the test suite without coverage",
+        "test:coverage": "Run the test suite with coverage (needs pcov or xdebug)"
+    }
 }

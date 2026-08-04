@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Tests;
 
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -23,26 +25,26 @@ use Pietroagazzi\Mechanic\Router\Router;
 #[UsesClass(RouteCollection::class)]
 #[UsesClass(Router::class)]
 #[UsesTrait(ResponseStatusCodeTrait::class)]
-class AbstractKernelTest extends TestCase
+final class AbstractKernelTest extends TestCase
 {
-	public function testSendNotFound(): void
-	{
-		$this->expectOutputString('Not Found');
+    public function testSendNotFound(): void
+    {
+        $this->expectOutputString('Not Found');
 
-		AbstractKernel::sendNotFound();
+        AbstractKernel::sendNotFound();
 
-		$this->assertEquals(404, http_response_code());
-	}
+        $this->assertEquals(404, http_response_code());
+    }
 
-	public function testGetRequest(): void
-	{
-		$_SERVER['REQUEST_METHOD'] = 'GET';
-		$_SERVER['REQUEST_URI'] = '/';
+    public function testGetRequest(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI'] = '/';
 
-		$request = (new class extends Mechanic {
-		})->getRequest();
+        $request = new class () extends Mechanic {
+        }->getRequest();
 
-		$this->assertEquals('GET', $request->getMethod());
-		$this->assertEquals('/', $request->getPath());
-	}
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertSame('/', $request->getPath());
+    }
 }

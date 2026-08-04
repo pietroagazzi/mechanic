@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Tests\Http;
 
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -10,26 +12,26 @@ use Pietroagazzi\Mechanic\Http\Response;
 
 #[CoversClass(JsonResponse::class)]
 #[UsesClass(Response::class)]
-class JsonResponseTest extends TestCase
+final class JsonResponseTest extends TestCase
 {
-	public function testJsonResponse(): void
-	{
-		$response = new JsonResponse([
-			'users' => [
-				[
-					'name' => 'Pietro',
-					'age' => 20,
-				],
-				[
-					'name' => 'John',
-					'age' => 30,
-				],
-			],
-		]);
+    public function testJsonResponse(): void
+    {
+        $response = new JsonResponse([
+            'users' => [
+                [
+                    'name' => 'Pietro',
+                    'age' => 20,
+                ],
+                [
+                    'name' => 'John',
+                    'age' => 30,
+                ],
+            ],
+        ]);
 
-		$this->assertEquals(
-			'{"users":[{"name":"Pietro","age":20},{"name":"John","age":30}]}',
-			$response->getContent()
-		);
-	}
+        $this->assertSame(
+            '{"users":[{"name":"Pietro","age":20},{"name":"John","age":30}]}',
+            $response->getContent(),
+        );
+    }
 }

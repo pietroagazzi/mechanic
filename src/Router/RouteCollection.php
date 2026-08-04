@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Router;
 
 use ArrayObject;
@@ -9,32 +11,32 @@ use ArrayObject;
  */
 class RouteCollection extends ArrayObject
 {
-	public function add(Route $route): void
-	{
-		$this->append($route);
-	}
+    public function add(Route $route): void
+    {
+        $this->append($route);
+    }
 
-	public function has(string $path): bool
-	{
-		return $this->get($path) !== false;
-	}
+    public function has(string $path): bool
+    {
+        return $this->get($path) !== false;
+    }
 
-	public function get(string $path): Route|false
-	{
-		foreach ($this as $route) {
-			if ($route->getPath() === $path) {
-				return $route;
-			}
-		}
+    public function get(string $path): Route|false
+    {
+        foreach ($this as $route) {
+            if ($route->getPath() === $path) {
+                return $route;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @return array<int, Route>
-	 */
-	public function getRoutes(): array
-	{
-		return $this->getArrayCopy();
-	}
+    /**
+     * @return array<int, Route>
+     */
+    public function getRoutes(): array
+    {
+        return $this->getArrayCopy();
+    }
 }

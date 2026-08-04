@@ -98,7 +98,7 @@ phing-latest.phar
 phing.phar
 phpunit.phar
 
-### Build
-build/coverage
-build/logs
+### Build & tool caches
+/.build/
 coverage.xml
+.php-cs-fixer.cache

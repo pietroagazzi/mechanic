@@ -1,8 +1,8 @@
 <?php
 
-namespace Pietroagazzi\Mechanic\Http;
+declare(strict_types=1);
 
-use function json_encode;
+namespace Pietroagazzi\Mechanic\Http;
 
 /**
  * A class that represents a JSON response
@@ -11,22 +11,21 @@ use function json_encode;
  */
 class JsonResponse extends Response
 {
-	public function __construct(
-		private readonly mixed $data,
-		private readonly int   $status = 200,
-		private array          $headers = []
-	)
-	{
-		$this->headers['Content-Type'] ??= 'application/json';
+    public function __construct(
+        private readonly mixed $data,
+        private readonly int   $status = 200,
+        private array          $headers = [],
+    ) {
+        $this->headers['Content-Type'] ??= 'application/json';
 
-		parent::__construct($this->encode(), $this->status, $this->headers);
-	}
+        parent::__construct($this->encode(), $this->status, $this->headers);
+    }
 
-	/**
-	 * Encode the data to JSON
-	 */
-	private function encode(): string
-	{
-		return json_encode($this->data, JSON_THROW_ON_ERROR);
-	}
+    /**
+     * Encode the data to JSON
+     */
+    private function encode(): string
+    {
+        return \json_encode($this->data, JSON_THROW_ON_ERROR);
+    }
 }

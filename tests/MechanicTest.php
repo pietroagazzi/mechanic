@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Tests;
 
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -25,41 +27,41 @@ use Pietroagazzi\Mechanic\Router\Router;
 #[UsesClass(RouteCollection::class)]
 #[UsesClass(Router::class)]
 #[UsesTrait(ResponseStatusCodeTrait::class)]
-class MechanicTest extends TestCase
+final class MechanicTest extends TestCase
 {
-	/**
-	 * @throws Exception
-	 */
-	public function testGet(): void
-	{
-		$mechanic = new Mechanic;
-		$mechanic->get('/path/to', fn() => new Response('Hello World'));
+    /**
+     * @throws Exception
+     */
+    public function testGet(): void
+    {
+        $mechanic = new Mechanic();
+        $mechanic->get('/path/to', fn (): Response => new Response('Hello World'));
 
-		$request = $this->createStub(Request::class);
-		$request->method('getMethod')->willReturn('GET');
-		$request->method('getPath')->willReturn('/path/to');
+        $request = $this->createStub(Request::class);
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getPath')->willReturn('/path/to');
 
-		$mechanic->handle($request);
+        $mechanic->handle($request);
 
-		$this->expectOutputString('Hello World');
-	}
+        $this->expectOutputString('Hello World');
+    }
 
-	/**
-	 * @throws Exception
-	 */
-	public function testHandleNotFound(): void
-	{
-		$this->expectOutputString('Not Found');
+    /**
+     * @throws Exception
+     */
+    public function testHandleNotFound(): void
+    {
+        $this->expectOutputString('Not Found');
 
-		$mechanic = new Mechanic();
-		$mechanic->get('/path/to', fn() => new Response('Hello World'));
+        $mechanic = new Mechanic();
+        $mechanic->get('/path/to', fn (): Response => new Response('Hello World'));
 
-		$request = $this->createStub(Request::class);
-		$request->method('getMethod')->willReturn('GET');
-		$request->method('getPath')->willReturn('/path/not/found');
+        $request = $this->createStub(Request::class);
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getPath')->willReturn('/path/not/found');
 
-		$mechanic->handle($request);
+        $mechanic->handle($request);
 
-		$this->assertEquals(404, http_response_code());
-	}
+        $this->assertEquals(404, http_response_code());
+    }
 }

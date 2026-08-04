@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Tests\Router;
 
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -7,19 +9,19 @@ use PHPUnit\Framework\TestCase;
 use Pietroagazzi\Mechanic\Router\Route;
 
 #[CoversClass(Route::class)]
-class RouteTest extends TestCase
+final class RouteTest extends TestCase
 {
-	public function testGetMethod(): void
-	{
-		$route = new Route('GET', '/', fn() => null);
+    public function testGetMethod(): void
+    {
+        $route = new Route('GET', '/', fn (): null => null);
 
-		$this->assertEquals('GET', $route->getMethod());
-	}
+        $this->assertSame('GET', $route->getMethod());
+    }
 
-	public function testGetPath(): void
-	{
-		$route = new Route('GET', '/', fn() => null);
+    public function testGetPath(): void
+    {
+        $route = new Route('GET', '/', fn (): null => null);
 
-		$this->assertEquals('/', $route->getPath());
-	}
+        $this->assertSame('/', $route->getPath());
+    }
 }

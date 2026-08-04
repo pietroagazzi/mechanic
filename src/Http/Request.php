@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pietroagazzi\Mechanic\Http;
 
 /**
@@ -11,116 +13,117 @@ namespace Pietroagazzi\Mechanic\Http;
  */
 class Request
 {
-	/**
-	 * Equivalent to $_POST
-	 * @var array<string, string> $request
-	 */
-	private array $request;
+    /**
+     * Keys are widened to array-key because superglobals can carry numeric keys
+     * (e.g. a query string like "?0=foo").
+     *
+     * @param array<array-key, mixed> $request Equivalent to $_POST
+     * @param array<array-key, mixed> $query Equivalent to $_GET
+     * @param array<array-key, mixed> $cookies Equivalent to $_COOKIE
+     * @param array<array-key, mixed> $server Equivalent to $_SERVER
+     */
+    public function __construct(
+        private readonly array $request,
+        private readonly array $query,
+        private readonly array $cookies,
+        private readonly array $server,
+    ) {
+    }
 
-	/**
-	 * Equivalent to $_GET
-	 * @var array<string, string> $query
-	 */
-	private array $query;
+    /**
+     * Create a new Request object from the global variables
+     */
+    public static function createFromGlobals(): Request
+    {
+        return new Request($_POST, $_GET, $_COOKIE, $_SERVER);
+    }
 
-	/**
-	 * Equivalent to $_COOKIE
-	 * @var array<string, string> $cookies
-	 */
-	private array $cookies;
+    public function getPath(): string
+    {
+        $path = parse_url($this->getUri(), PHP_URL_PATH);
 
-	/**
-	 * Equivalent to $_SERVER
-	 * @var array<string, string> $server
-	 */
-	private array $server;
+        return is_string($path) ? $path : '/';
+    }
 
-	/**
-	 * @param array<string, string> $request
-	 * @param array<string, string> $query
-	 * @param array<string, string> $cookies
-	 * @param array<string, string> $server
-	 */
-	public function __construct(array $request, array $query, array $cookies, array $server)
-	{
-		$this->request = $request;
-		$this->query = $query;
-		$this->cookies = $cookies;
-		$this->server = $server;
-	}
+    /**
+     * Get the URI of the request
+     */
+    public function getUri(): string
+    {
+        return $this->stringFromServer('REQUEST_URI', '/');
+    }
 
-	/**
-	 * Create a new Request object from the global variables
-	 */
-	public static function createFromGlobals(): Request
-	{
-		return new Request($_POST, $_GET, $_COOKIE, $_SERVER);
-	}
+    /**
+     * Get the HTTP method of the request
+     */
+    public function getMethod(): string
+    {
+        return $this->stringFromServer('REQUEST_METHOD', 'GET');
+    }
 
-	public function getPath(): string
-	{
-		return parse_url($this->getUri(), PHP_URL_PATH);
-	}
+    /**
+     * Get the request body
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getBody(): array
+    {
+        return $this->request;
+    }
 
-	/**
-	 * Get the URI of the request
-	 */
-	public function getUri(): string
-	{
-		return $this->server['REQUEST_URI'];
-	}
+    /**
+     * Get the query string
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getQuery(): array
+    {
+        return $this->query;
+    }
 
-	/**
-	 * Get the HTTP method of the request
-	 */
-	public function getMethod(): string
-	{
-		return $this->server['REQUEST_METHOD'];
-	}
+    /**
+     * Get the cookies
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getCookies(): array
+    {
+        return $this->cookies;
+    }
 
-	/**
-	 * Get the request body
-	 * @return array<string, string>
-	 */
-	public function getBody(): array
-	{
-		return $this->request;
-	}
+    /**
+     * Get the server variables
+     *
+     * @return array<array-key, mixed>
+     */
+    public function getServer(): array
+    {
+        return $this->server;
+    }
 
-	/**
-	 * Get the query string
-	 * @return array<string, string>
-	 */
-	public function getQuery(): array
-	{
-		return $this->query;
-	}
+    /**
+     * Get the value of a request parameter
+     *
+     * Non-scalar values (e.g. nested arrays sent by the client) fall back to
+     * the default, since this accessor is contractually string-typed.
+     *
+     * @param string $key The name of the parameter
+     * @param string|null $default The default value if the parameter is not set
+     */
+    public function get(string $key, ?string $default = null): ?string
+    {
+        $value = $this->request[$key] ?? null;
 
-	/**
-	 * Get the cookies
-	 * @return array<string, string>
-	 */
-	public function getCookies(): array
-	{
-		return $this->cookies;
-	}
+        return is_scalar($value) ? (string) $value : $default;
+    }
 
-	/**
-	 * Get the server variables
-	 * @return array<string, string>
-	 */
-	public function getServer(): array
-	{
-		return $this->server;
-	}
+    /**
+     * Read a server variable as a string, falling back when it is absent or not a string
+     */
+    private function stringFromServer(string $key, string $default): string
+    {
+        $value = $this->server[$key] ?? null;
 
-	/**
-	 * Get the value of a request parameter
-	 * @param string $key The name of the parameter
-	 * @param string|null $default The default value if the parameter is not set
-	 */
-	public function get(string $key, ?string $default = null): ?string
-	{
-		return $this->request[$key] ?? $default;
-	}
+        return is_string($value) ? $value : $default;
+    }
 }
