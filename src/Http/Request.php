@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Pietroagazzi\Mechanic\Http;
 
+use Override;
+use Psr\Http\Message\{RequestInterface, UriInterface};
+
 /**
- * HTTP request object
+ * PSR-7 compliant HTTP request object
  *
- * @todo: Should implement PSR-7 RequestInterface
+ * @see https://www.php-fig.org/psr/psr-7/
  *
  * @author Pietro Agazzi <contact@agazzipietro.it>
  */
-class Request
+class Request extends AbstractMessage implements RequestInterface
 {
     /**
      * Keys are widened to array-key because superglobals can carry numeric keys
@@ -32,12 +35,19 @@ class Request
 
     /**
      * Create a new Request object from the global variables
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public static function createFromGlobals(): Request
     {
         return new Request($_POST, $_GET, $_COOKIE, $_SERVER);
     }
 
+    /**
+     * Get the path of the request
+     *
+     * @return string The path of the request
+     */
     public function getPath(): string
     {
         $path = parse_url($this->getUri(), PHP_URL_PATH);
@@ -47,14 +57,18 @@ class Request
 
     /**
      * Get the URI of the request
+     *
+     * @return string The URI of the request
      */
-    public function getUri(): string
+    public function getUri(): UriInterface
     {
         return $this->stringFromServer('REQUEST_URI', '/');
     }
 
     /**
      * Get the HTTP method of the request
+     *
+     * @return string The HTTP method of the request
      */
     public function getMethod(): string
     {
@@ -62,19 +76,20 @@ class Request
     }
 
     /**
-     * Get the request body
+     * Get the body of the request
      *
-     * @return array<array-key, mixed>
+     * @return array<array-key, mixed> The body of the request
      */
+    #[Override]
     public function getBody(): array
     {
         return $this->request;
     }
 
     /**
-     * Get the query string
+     * Get the query parameters of the request
      *
-     * @return array<array-key, mixed>
+     * @return array<array-key, mixed> The query parameters of the request
      */
     public function getQuery(): array
     {
@@ -82,9 +97,9 @@ class Request
     }
 
     /**
-     * Get the cookies
+     * Get the cookies of the request
      *
-     * @return array<array-key, mixed>
+     * @return array<array-key, mixed> The cookies of the request
      */
     public function getCookies(): array
     {
@@ -92,9 +107,9 @@ class Request
     }
 
     /**
-     * Get the server variables
+     * Get the server variables of the request
      *
-     * @return array<array-key, mixed>
+     * @return array<array-key, mixed> The server variables of the request
      */
     public function getServer(): array
     {
@@ -118,7 +133,13 @@ class Request
     }
 
     /**
-     * Read a server variable as a string, falling back when it is absent or not a string
+     * Get the value of a query parameter
+     *
+     * Non-scalar values (e.g. nested arrays sent by the client) fall back to
+     * the default, since this accessor is contractually string-typed.
+     *
+     * @param string $key The name of the parameter
+     * @param string|null $default The default value if the parameter is not set
      */
     private function stringFromServer(string $key, string $default): string
     {
